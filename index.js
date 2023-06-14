@@ -134,10 +134,7 @@ app.get('/v1/mecanica/aluno', cors(), async function(request, response) {
 })
 app.get('/', cors(), async function(request, response) {
 
-    let dadosAluno = await controllerAluno.getAlunos();
-
-    response.status(dadosAluno.status)
-    response.json(dadosAluno)
+    response.json("HELLO WORLD")
 
 })
 
