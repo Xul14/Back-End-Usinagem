@@ -132,6 +132,11 @@ app.get('/v1/mecanica/aluno', cors(), async function(request, response) {
     response.json(dadosAluno)
 
 })
+app.get('/', cors(), async function(request, response) {
+
+    response.json("HELLO WORLD")
+
+})
 
 //Endpoint que retorna o aluno filtrando pelo id
 app.get('/v1/mecanica/aluno/:id', cors(), async function(request, response) {
