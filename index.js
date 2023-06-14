@@ -134,7 +134,10 @@ app.get('/v1/mecanica/aluno', cors(), async function(request, response) {
 })
 app.get('/', cors(), async function(request, response) {
 
-    response.json("HELLO WORLD")
+    let dadosAluno = await controllerAluno.getAlunos();
+
+    response.status(dadosAluno.status)
+    response.json(dadosAluno)
 
 })
 
@@ -1624,6 +1627,8 @@ app.get('/v1/mecanica/avaliacao/:id', cors(), async function(request, response) 
 })
 
 const port = process.env.PORT || 8080
+console.log(port);
+
 app.listen(port, function() {
     console.log('Servidor aguardando requisições na porta 8080');
 })
