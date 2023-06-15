@@ -25,6 +25,8 @@ const controllerTurmaDisciplinaProfessorAtividade = require('./controller/contro
 const controllerRegistroDeTempo = require('./controller/controller_registro_tempo.js')
 const controllerMatriculaAtividadeRegistroDeTempo = require('./controller/controller_matricula_atividade_registro_tempo.js')
 const controllerAvaliacao = require('./controller/controller_avaliacao.js')
+const controllerAdm = require('./controller/controller_adm.js')
+
 
 
 var message = require('./controller/modulo/config.js')
@@ -1621,6 +1623,162 @@ app.get('/v1/mecanica/avaliacao/:id', cors(), async function(request, response) 
     response.status(resultTipoAtividade.status)
     response.json(resultTipoAtividade)
 
+})
+
+/*************************************************************************************** 
+ * Objetivo: API para integração entre back-end e banco de dados (GET, POST, PUT, DELETE)
+ * Data: 14/04/2023
+ * Autora: Nicole Souza
+ * Versão: 1.0
+ **************************************************************************************/
+
+// receber o token encaminhado nas requisições e solicitar a validação
+const verifyJWT = async function (request, response, next){
+    
+    // import da biblioteca para validação
+    const jwt = require('./middleware/middlewareJWT.js')
+
+    // deve ser encaminhado na requisição do postman OU do front-end
+    let token = request.headers['x-access-token']
+
+    // valida a autencidade do token
+    const autencidadeToken = await jwt.validadeJWT(token)
+
+    // verifica se requisição será encerrada ou não
+    if(autencidadeToken)
+        next()
+    else 
+        return response.status(401).end()
+}
+
+// end-point que autentica administrator
+app.get('/v1/mecanica/adm/professor/:email/:password', cors(), async function(request, response) {
+
+    let email = request.params.email
+    let password = request.params.password
+
+    let dados = await controllerAdm.authenticatingAdministrator(email, password)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// endpoint que envia email com token para troca de senha
+app.get('/v1/mecanica/adm/forgotPassword/:email', cors(), async function(request, response) {
+
+    let email = request.params.email
+
+    let dados = await controllerAdm.forgotPassword(email)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// endpoint que autentica e faz mudança da senha - (NÃO FINALIZADO)
+app.put('/v1/mecanica/adm/forgotPassword/:email/:newPassword/:token', cors(), async function(request, response) {
+
+    let email = request.params.email
+    let newPassword = request.params.newPassword
+    let token = request.params.token
+
+    let dados = await controllerAdm.newPasswordAdm(email, token, newPassword)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// end-point que retorna todos os professores
+app.get('/v1/mecanica/adm/professores', cors(), async function(request, response) {
+    let dados = await controllerAdm.getTeachers()
+
+    response.status(dados.status)
+    response.json(dados)
+})
+
+// end-point que retorna o professor pelo id
+app.get('/v1/mecanica/adm/professor/:id', cors(), async function(request, response) {
+
+    let id = request.params.id
+
+    let dados = await controllerAdm.selectedTeacherByIdInDb(id)
+    console.log(dados)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// end-point que retorna um professor com base no nome
+app.get('/v1/mecanica/adm/professores/:nome', cors(), async function(request, response){
+
+    let nome = request.params.nome
+
+    let dados = await controllerAdm.getTeacherByName(nome)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// end-point que insere novo professor
+app.post('/v1/mecanica/adm/professor', cors(), bodyParserJSON, async function(request, response){
+
+    let dadosBody = request.body
+    console.log(dadosBody)
+
+    let dados = await controllerAdm.insertTeacherInDb(dadosBody)
+
+    response.status(dados.status)
+    response.json(dados)
+
+})
+
+// end-point que atualiza um professor existente, filtrando pelo id
+app.put('/v1/mecanica/adm/professor/:id', cors(), bodyParserJSON, async function(request, response){
+    let contentType = request.headers['content-type']
+
+    if(String(contentType).toLowerCase() == 'application/json'){
+        let idTeacher = request.params.id
+
+        let dadosTeacherBody = request.body
+        console.log(dadosTeacherBody)
+
+        let dados = await controllerAdm.updateTeacherInDb(dadosTeacherBody, idTeacher)
+
+        response.status(dados.status)
+        response.json(dados)
+
+    } else {
+        response.status(message.ERROR_INVALID_CONTENT_TYPE.status)
+        response.json(message.ERROR_INVALID_CONTENT_TYPE)
+    }
+
+})
+
+// end-point que deleta um professor existente, filtrando pelo id
+app.delete('/v1/mecanica/adm/professor/:id', cors(), async function(request, response){
+        
+    let idTeacher = request.params.id
+
+    let dados = await controllerAdm.deleteTeacherInDb(idTeacher)
+
+    response.status(dados.status)
+    response.json(dados)
+
+    
+})
+
+// endpoint de criptografia - hash
+app.get('v1/mecanica/adm/professir/hash/:password', cors(), async function(request, response){
+    let password = request.params.password
+
+    let dados = await controllerAdm.generateHash(password)
+
+    response.status(dados.status)
+    response.json(dados)
 })
 
 const port = process.env.PORT || 8080

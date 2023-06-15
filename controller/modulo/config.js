@@ -18,6 +18,11 @@ const ERROR_NAME_NOT_FOUND = { status: 404, message: 'O nome não foi encontrado
 const ERROR_INVALID_NAME = { status: 404, message: 'O nome não é valido' }
 const ERROR_INVALID_AUTHENTICATE = { status: 404, message: 'Email ou senha invalidos' }
 const ERROR_INVALID_EMAIL = {status: 400,   message: 'O email informado é invalido ou já existente no banco, por favor, tente outro email'}
+const ERROR_AUTHETICATION = { status: 401, message: 'Email ou senha invalidos'}
+const ERROR_AUTHETICATION_ADM = { status: 401, message: 'Administrador não encontrado'}
+const ERROR_AUTHETICATION_TOKEN = { status: 401, message: 'O Token fornecido expirou ou não é valido, tente novamente'}
+const ERROR_AUTHETICATION_EMAIL = { status: 401, message: 'Email invalido'}
+const ERROR_ACCESS_DENIED = { status: 401, message: 'acesso negado, tente novamente'}
 
 /******************************************************** MENSAGENS DE SUCESSO ********************************************************/
 const SUCCESS_CREATED_ITEM = { status: 201, message: 'Item criado com sucesso.' }
@@ -41,5 +46,10 @@ module.exports = {
     ERROR_NAME_NOT_FOUND,
     ERROR_INVALID_NAME,
     ERROR_INVALID_EMAIL,
-    ERROR_INVALID_AUTHENTICATE
+    ERROR_INVALID_AUTHENTICATE,
+    ERROR_AUTHETICATION,
+    ERROR_AUTHETICATION_ADM,
+    ERROR_AUTHETICATION_TOKEN,
+    ERROR_AUTHETICATION_EMAIL,
+    ERROR_ACCESS_DENIED
 }
